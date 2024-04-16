@@ -59,7 +59,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = [UIColor colorWithRed:21.0/255.0 green:20.0/255.0 blue:33.0/255.0 alpha:1];
     [self configMoviePlayer];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pausePlayer) name:UIApplicationWillResignActiveNotification object:nil];
 }
@@ -146,6 +146,7 @@
     _collectionView.delegate = self;
     _collectionView.contentInset = UIEdgeInsetsMake(0, VideoEditLeftMargin + PanImageWidth, 0, VideoEditLeftMargin + PanImageWidth);
     _collectionView.clipsToBounds = NO;
+    _collectionView.backgroundColor = UIColor.clearColor;
     _collectionView.showsHorizontalScrollIndicator = NO;
     _collectionView.alwaysBounceHorizontal = YES;
     [_collectionView registerClass:TZVideoPictureCell.class forCellWithReuseIdentifier:@"TZVideoPictureCell"];
