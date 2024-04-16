@@ -19,6 +19,7 @@
 #import "TZImageRequestOperation.h"
 #import "TZAuthLimitedFooterTipView.h"
 #import <PhotosUI/PhotosUI.h>
+#import "TZVideoCropController.h"
 @interface TZPhotoPickerController ()<UICollectionViewDataSource,UICollectionViewDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate, PHPhotoLibraryChangeObserver> {
     NSMutableArray *_models;
     
@@ -717,9 +718,20 @@ static CGFloat itemMargin = 5;
             TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
             [imagePickerVc showAlertWithTitle:[NSBundle tz_localizedStringForKey:@"Can not choose both video and photo"]];
         } else {
-            TZVideoPlayerController *videoPlayerVc = [[TZVideoPlayerController alloc] init];
-            videoPlayerVc.model = model;
-            [self.navigationController pushViewController:videoPlayerVc animated:YES];
+            if (tzImagePickerVc.allowEditVideoWithOutPreview) {
+                TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
+                TZVideoCropController *videoCropVc = [[TZVideoCropController alloc] init];
+                videoCropVc.model = model;
+                videoCropVc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                videoCropVc.modalPresentationStyle = UIModalPresentationFullScreen;
+                videoCropVc.modalPresentationCapturesStatusBarAppearance = YES;
+                videoCropVc.imagePickerVc = imagePickerVc;
+                [self presentViewController:videoCropVc animated:YES completion:nil];
+            }else{
+                TZVideoPlayerController *videoPlayerVc = [[TZVideoPlayerController alloc] init];
+                videoPlayerVc.model = model;
+                [self.navigationController pushViewController:videoPlayerVc animated:YES];
+            }
         }
     } else if (model.type == TZAssetModelMediaTypePhotoGif && tzImagePickerVc.allowPickingGif && !tzImagePickerVc.allowPickingMultipleVideo) {
         if (tzImagePickerVc.selectedModels.count > 0) {
