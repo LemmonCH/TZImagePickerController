@@ -45,21 +45,27 @@
 @property (strong, nonatomic) NSArray *imageTimes;
 @property (strong, nonatomic) NSTimer *timer;
 
+@property (strong, nonatomic) UILabel *startLabel;
+@property (strong, nonatomic) UILabel *endLabel;
+@property (strong, nonatomic) UIView *bottomView;
 @end
 
 @implementation TZVideoCropController
 
-#define VideoEditLeftMargin 40
-#define PanImageWidth 10
+#define VideoEditLeftMargin 15
+#define PanImageWidth 22
 #define MinCropVideoDuration 1
+#define BottomViewHeight 130
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
+#define COLOR(R, G, B, A) [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = COLOR(18, 19, 21, 1);
     [self configMoviePlayer];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pausePlayer) name:UIApplicationWillResignActiveNotification object:nil];
 }
@@ -88,6 +94,7 @@
             self->_playerLayer.frame = self.view.bounds;
             [self.view.layer addSublayer:self->_playerLayer];
             [self configPlayButton];
+            [self configTopToolBar];
             [self configBottomToolBar];
             if (self.imagePickerVc.allowEditVideo) {
                 [self configVideoImageCollectionView];
@@ -107,13 +114,7 @@
     [self.view addSubview:_playButton];
 }
 
-- (void)configBottomToolBar {
-    _cropVideoDurationLabel = UILabel.new;
-    _cropVideoDurationLabel.textAlignment = NSTextAlignmentCenter;
-    _cropVideoDurationLabel.textColor = UIColor.whiteColor;
-    _cropVideoDurationLabel.font = [UIFont systemFontOfSize:12];
-    [self.view addSubview:_cropVideoDurationLabel];
-    
+- (void)configTopToolBar {
     _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _cancelButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [_cancelButton setTitle:[NSBundle tz_localizedStringForKey:@"Cancel"] forState:0];
@@ -128,10 +129,33 @@
     [_doneButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [_doneButton setTitleColor:self.imagePickerVc.oKButtonTitleColorDisabled forState:UIControlStateDisabled];
     [self.view addSubview:_doneButton];
+}
+
+- (void)configBottomToolBar {
+    _bottomView = UIView.new;
+    _bottomView.backgroundColor = COLOR(30, 31, 33, 1);
+    [self.view addSubview:_bottomView];
     
-    if (self.imagePickerVc.videoEditViewPageUIConfigBlock) {
-        self.imagePickerVc.videoEditViewPageUIConfigBlock(_playButton, _cropVideoDurationLabel, _cancelButton, _doneButton);
-    }
+    _cropVideoDurationLabel = UILabel.new;
+    _cropVideoDurationLabel.textAlignment = NSTextAlignmentCenter;
+    _cropVideoDurationLabel.textColor = UIColor.whiteColor;
+    _cropVideoDurationLabel.font = [UIFont systemFontOfSize:12];
+    [_bottomView addSubview:_cropVideoDurationLabel];
+    
+    _startLabel = UILabel.new;
+    _startLabel.textColor = UIColor.whiteColor;
+    _startLabel.font = [UIFont systemFontOfSize:12];
+    [_bottomView addSubview:_startLabel];
+    
+    _endLabel = UILabel.new;
+    _endLabel.textColor = UIColor.whiteColor;
+    _endLabel.font = [UIFont systemFontOfSize:12];
+    _endLabel.textAlignment = NSTextAlignmentRight;
+    [_bottomView addSubview:_endLabel];
+    
+//    if (self.imagePickerVc.videoEditViewPageUIConfigBlock) {
+//        self.imagePickerVc.videoEditViewPageUIConfigBlock(_playButton, _cropVideoDurationLabel, _cancelButton, _doneButton);
+//    }
 }
 
 - (void)configVideoImageCollectionView {
@@ -150,7 +174,7 @@
     _collectionView.alwaysBounceHorizontal = YES;
     _collectionView.backgroundColor = UIColor.clearColor;
     [_collectionView registerClass:TZVideoPictureCell.class forCellWithReuseIdentifier:@"TZVideoPictureCell"];
-    [self.view addSubview:_collectionView];
+    [_bottomView addSubview:_collectionView];
 }
 
 - (void)configVideoEditView {
@@ -158,7 +182,7 @@
     _videoEditView.backgroundColor = UIColor.clearColor;
     _videoEditView.delegate = self;
     _videoEditView.maxCropVideoDuration = self.imagePickerVc.maxCropVideoDuration;
-    [self.view addSubview:_videoEditView];
+    [_bottomView addSubview:_videoEditView];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -177,33 +201,28 @@
     CGFloat statusBarHeight = isFullScreen ? [TZCommonTools tz_statusBarHeight] : 0;
     CGFloat statusBarAndNaviBarHeight = statusBarHeight + self.navigationController.navigationBar.tz_height;
     
-    CGFloat toolBarHeight = 44 + [TZCommonTools tz_safeAreaInsets].bottom;
-    CGFloat doneButtonWidth = [_doneButton.currentTitle boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:16]} context:nil].size.width;
-    doneButtonWidth = MAX(44, doneButtonWidth);
+    CGFloat doneButtonWidth = 62;
     
     [_cancelButton sizeToFit];
     
-    if ([TZCommonTools tz_isRightToLeftLayout]) {
-        _doneButton.frame = CGRectMake(12, self.view.tz_height - toolBarHeight, doneButtonWidth, 44);
-        _cancelButton.frame = CGRectMake(self.view.tz_width - _cancelButton.tz_width - 12, self.view.tz_height - toolBarHeight, _cancelButton.tz_width, 44);
-    } else {
-        _doneButton.frame = CGRectMake(self.view.tz_width - doneButtonWidth - 12, self.view.tz_height - toolBarHeight, doneButtonWidth, 44);
-        _cancelButton.frame = CGRectMake(12, self.view.tz_height - toolBarHeight, _cancelButton.tz_width, 44);
-    }
+    _bottomView.frame = CGRectMake(0, self.view.tz_height - BottomViewHeight - (isFullScreen ? 34 : 0), self.view.tz_height, BottomViewHeight + (isFullScreen ? 34 : 0));
     
-    _playButton.frame = CGRectMake(0, statusBarAndNaviBarHeight, self.view.tz_width, self.view.tz_height - statusBarAndNaviBarHeight - toolBarHeight);
+    _doneButton.frame = CGRectMake(self.view.tz_width - doneButtonWidth - VideoEditLeftMargin, statusBarHeight + 8, doneButtonWidth, 32);
+    _cancelButton.frame = CGRectMake(VideoEditLeftMargin, _doneButton.tz_top, _doneButton.tz_width, _doneButton.tz_height);
     
     CGFloat collectionViewH = (self.view.tz_width - VideoEditLeftMargin * 2 - 2 * PanImageWidth) / 10.0 * 2;
-    _collectionView.frame = CGRectMake(0, self.view.tz_height - collectionViewH - toolBarHeight - statusBarHeight, self.view.tz_width, collectionViewH);
+    _collectionView.frame = CGRectMake(0, 35, self.view.tz_width, collectionViewH);
     _videoEditView.frame = _collectionView.frame;
-    _cropVideoDurationLabel.frame = CGRectMake(0, _videoEditView.tz_bottom, self.view.tz_width, 20);
-    
-    CGFloat playerLayerHeight = CGRectGetMinY(_collectionView.frame) - statusBarHeight * 2;
+    _cropVideoDurationLabel.frame = CGRectMake(0, 4, self.view.tz_width, 20);
+    _startLabel.frame = CGRectMake(VideoEditLeftMargin, 4, 100, 20);
+    _endLabel.frame = CGRectMake(self.view.tz_width - 100 - VideoEditLeftMargin, 4, 100, 20);
+
+    CGFloat playerLayerHeight = CGRectGetMinY(_bottomView.frame) - statusBarAndNaviBarHeight * 2 - 44;
     CGFloat playerLayerWidth = self.view.tz_width/self.view.tz_height * playerLayerHeight;
     CGFloat playerLayerLeft = (self.view.tz_width - playerLayerWidth) / 2.0;
-    CGRect playerLayerFrame = CGRectMake(playerLayerLeft, statusBarHeight, playerLayerWidth, playerLayerHeight);
+    CGRect playerLayerFrame = CGRectMake(playerLayerLeft, statusBarHeight + 44, playerLayerWidth, playerLayerHeight);
     _playerLayer.frame = playerLayerFrame;
-    _playButton.frame = CGRectMake(0, statusBarAndNaviBarHeight, self.view.tz_width, playerLayerHeight - statusBarAndNaviBarHeight);
+    _playButton.frame = playerLayerFrame;
    
     if (self.imagePickerVc.videoEditViewPageDidLayoutSubviewsBlock) {
         self.imagePickerVc.videoEditViewPageDidLayoutSubviewsBlock(_playButton, _cropVideoDurationLabel, _cancelButton, _doneButton);
