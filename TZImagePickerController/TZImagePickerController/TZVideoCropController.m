@@ -148,6 +148,7 @@
     _collectionView.clipsToBounds = NO;
     _collectionView.showsHorizontalScrollIndicator = NO;
     _collectionView.alwaysBounceHorizontal = YES;
+    _collectionView.backgroundColor = UIColor.clearColor;
     [_collectionView registerClass:TZVideoPictureCell.class forCellWithReuseIdentifier:@"TZVideoPictureCell"];
     [self.view addSubview:_collectionView];
 }
