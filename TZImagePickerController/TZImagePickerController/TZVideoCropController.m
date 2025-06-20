@@ -138,18 +138,18 @@
     
     _cropVideoDurationLabel = UILabel.new;
     _cropVideoDurationLabel.textAlignment = NSTextAlignmentCenter;
-    _cropVideoDurationLabel.textColor = UIColor.whiteColor;
-    _cropVideoDurationLabel.font = [UIFont systemFontOfSize:12];
+    _cropVideoDurationLabel.textColor = COLOR(255, 255, 255, 0.3);
+    _cropVideoDurationLabel.font = [UIFont systemFontOfSize:10];
     [_bottomView addSubview:_cropVideoDurationLabel];
     
     _startLabel = UILabel.new;
-    _startLabel.textColor = UIColor.whiteColor;
-    _startLabel.font = [UIFont systemFontOfSize:12];
+    _startLabel.textColor = COLOR(255, 255, 255, 0.3);
+    _startLabel.font = [UIFont systemFontOfSize:10];
     [_bottomView addSubview:_startLabel];
     
     _endLabel = UILabel.new;
-    _endLabel.textColor = UIColor.whiteColor;
-    _endLabel.font = [UIFont systemFontOfSize:12];
+    _endLabel.textColor = COLOR(255, 255, 255, 0.3);
+    _endLabel.font = [UIFont systemFontOfSize:10];
     _endLabel.textAlignment = NSTextAlignmentRight;
     [_bottomView addSubview:_endLabel];
     
