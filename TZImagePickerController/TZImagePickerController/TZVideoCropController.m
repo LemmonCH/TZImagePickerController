@@ -143,6 +143,7 @@
     [_bottomView addSubview:_cropVideoDurationLabel];
     
     _startLabel = UILabel.new;
+    _startLabel.text = @"00:00";
     _startLabel.textColor = COLOR(255, 255, 255, 0.3);
     _startLabel.font = [UIFont systemFontOfSize:10];
     [_bottomView addSubview:_startLabel];
@@ -153,9 +154,9 @@
     _endLabel.textAlignment = NSTextAlignmentRight;
     [_bottomView addSubview:_endLabel];
     
-//    if (self.imagePickerVc.videoEditViewPageUIConfigBlock) {
-//        self.imagePickerVc.videoEditViewPageUIConfigBlock(_playButton, _cropVideoDurationLabel, _cancelButton, _doneButton);
-//    }
+    if (self.imagePickerVc.videoEditViewPageUIConfigBlock) {
+        self.imagePickerVc.videoEditViewPageUIConfigBlock(_playButton, _cropVideoDurationLabel, _cancelButton, _doneButton);
+    }
 }
 
 - (void)configVideoImageCollectionView {
@@ -246,12 +247,14 @@
         imageCount = 10;
         self.videoEditView.allImgWidth = maxCropWidth;
         _cropVideoDurationLabel.text = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Selected for %ld seconds"], (NSInteger)durationSeconds];
+        _endLabel.text = [self timeFormatted:(int)durationSeconds];
     } else {
         CGFloat singleWidthSecond = maxCropWidth / self.imagePickerVc.maxCropVideoDuration;
         CGFloat allImgWidth = singleWidthSecond * durationSeconds;
         self.videoEditView.allImgWidth = allImgWidth;
         imageCount = allImgWidth / _itemW;
         _cropVideoDurationLabel.text = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Selected for %ld seconds"],(long)self.imagePickerVc.maxCropVideoDuration];
+        _endLabel.text = [self timeFormatted:(int)self.imagePickerVc.maxCropVideoDuration];
     }
     NSArray *assetTracks = [_asset tracksWithMediaType:AVMediaTypeVideo];
     if (!assetTracks.count) {
@@ -482,6 +485,12 @@
     [_player seekToTime:[self getCropStartTime] toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [_player play];
     [self.videoEditView indicatorLineAnimateWithDuration:[self getCropVideoDuration] cropRect:self.videoEditView.cropRect];
+}
+
+- (NSString *)timeFormatted:(int)totalSeconds {
+    int seconds = totalSeconds%60;
+    int minutes = (totalSeconds/60)%60;
+    return [NSString stringWithFormat:@"%02d:%02d",minutes,seconds];
 }
 
 #pragma mark - Notification Method
