@@ -116,17 +116,20 @@
 
 - (void)configTopToolBar {
     _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:16];
+    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:14];
     [_cancelButton setTitle:[NSBundle tz_localizedStringForKey:@"Cancel"] forState:0];
     [_cancelButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [_cancelButton addTarget:self action:@selector(cancelButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:_cancelButton];
     
     _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _doneButton.titleLabel.font = [UIFont systemFontOfSize:16];
+    _doneButton.titleLabel.font = [UIFont boldSystemFontOfSize:14];
+    [_doneButton setTitleColor:COLOR(18, 19, 21, 1) forState:0];
+    _doneButton.layer.cornerRadius = 8;
+    _doneButton.layer.masksToBounds = YES;
+    _doneButton.backgroundColor = COLOR(184, 209, 255, 1);
     [_doneButton addTarget:self action:@selector(doneButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [_doneButton setTitle:self.imagePickerVc.doneBtnTitleStr forState:UIControlStateNormal];
-    [_doneButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [_doneButton setTitleColor:self.imagePickerVc.oKButtonTitleColorDisabled forState:UIControlStateDisabled];
     [self.view addSubview:_doneButton];
 }
@@ -219,9 +222,10 @@
     _endLabel.frame = CGRectMake(self.view.tz_width - 100 - VideoEditLeftMargin, 4, 100, 20);
 
     CGFloat playerLayerHeight = CGRectGetMinY(_bottomView.frame) - statusBarAndNaviBarHeight * 2 - 44;
-    CGFloat playerLayerWidth = self.view.tz_width/self.view.tz_height * playerLayerHeight;
+//    CGFloat playerLayerWidth = self.view.tz_width/self.view.tz_height * playerLayerHeight;
+    CGFloat playerLayerWidth = self.view.tz_width - 110;
     CGFloat playerLayerLeft = (self.view.tz_width - playerLayerWidth) / 2.0;
-    CGRect playerLayerFrame = CGRectMake(playerLayerLeft, statusBarHeight + 44, playerLayerWidth, playerLayerHeight);
+    CGRect playerLayerFrame = CGRectMake(playerLayerLeft, statusBarHeight + 64, playerLayerWidth, playerLayerHeight);
     _playerLayer.frame = playerLayerFrame;
     _playButton.frame = playerLayerFrame;
    
@@ -247,15 +251,14 @@
         imageCount = 10;
         self.videoEditView.allImgWidth = maxCropWidth;
         _cropVideoDurationLabel.text = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Selected for %ld seconds"], (NSInteger)durationSeconds];
-        _endLabel.text = [self timeFormatted:(int)durationSeconds];
     } else {
         CGFloat singleWidthSecond = maxCropWidth / self.imagePickerVc.maxCropVideoDuration;
         CGFloat allImgWidth = singleWidthSecond * durationSeconds;
         self.videoEditView.allImgWidth = allImgWidth;
         imageCount = allImgWidth / _itemW;
         _cropVideoDurationLabel.text = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Selected for %ld seconds"],(long)self.imagePickerVc.maxCropVideoDuration];
-        _endLabel.text = [self timeFormatted:(int)self.imagePickerVc.maxCropVideoDuration];
     }
+    _endLabel.text = [self timeFormatted:(int)durationSeconds];
     NSArray *assetTracks = [_asset tracksWithMediaType:AVMediaTypeVideo];
     if (!assetTracks.count) {
         self.iCloudErrorView.hidden = NO;
