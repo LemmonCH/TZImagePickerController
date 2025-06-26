@@ -558,7 +558,7 @@
     [self addSubview:_indicatorLine];
     
     _beginImgView = UIImageView.new;
-    _beginImgView.image = [UIImage imageNamed:@"leftVideoEdit"];
+    _beginImgView.image = [UIImage tz_imageNamedFromMyBundle:@"leftVideoEdit"];
     _beginImgView.userInteractionEnabled = YES;
     _beginImgView.tag = 0;
     UIPanGestureRecognizer *beginPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureAction:)];
@@ -566,7 +566,7 @@
     [self addSubview:_beginImgView];
     
     _endImgView = UIImageView.new;
-    _endImgView.image = [UIImage imageNamed:@"rightVideoEdit"];
+    _endImgView.image = [UIImage tz_imageNamedFromMyBundle:@"rightVideoEdit"];
     _endImgView.userInteractionEnabled = YES;
     _endImgView.tag = 1;
     UIPanGestureRecognizer *endPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureAction:)];
